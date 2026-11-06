@@ -4,7 +4,7 @@
   "description": "Teleprompter, który przewija tekst zgodnie z tym, co mówisz. Bez konta, bez reklam.",
   "start_url": "./",
   "scope": "./",
-  "display": "standalone",
+  "display": "browser",
   "orientation": "any",
   "background_color": "#0a0a0b",
   "theme_color": "#0a0a0b",

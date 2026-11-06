@@ -37,6 +37,8 @@
     lblFont: $("#lbl-font"),
     selLang: $("#sel-lang"),
     modeVoice: $("#btn-mode-voice"),
+    note: $("#pwa-note"),
+    noteClose: $("#pwa-note-close"),
     modeManual: $("#btn-mode-manual"),
   };
 
@@ -713,6 +715,9 @@
   els.edCancel.addEventListener("click", closeEditor);
   els.edText.addEventListener("input", updateCount);
   els.sheetOk.addEventListener("click", closeSheet);
+  els.noteClose.addEventListener("click", () => {
+    els.note.hidden = true;
+  });
 
   $("#btn-font-up").addEventListener("click", () => applyFont(state.font + 4));
   $("#btn-font-down").addEventListener("click", () => applyFont(state.font - 4));
@@ -761,10 +766,11 @@
   $("#btn-help").addEventListener("click", () => {
     openSheet(
       "Jak to działa",
-      "<p><b>Tryb głosowy</b> — mikrofon nasłuchuje, a tekst przewija się tylko wtedy, gdy rozpozna Twoje słowa. Nic nie jest wysyłane na żaden serwer poza usługą rozpoznawania mowy Apple/Google w przeglądarce.</p>" +
+      "<p><b>Tryb głosowy</b> — mikrofon nasłuchuje, a tekst przewija się tylko wtedy, gdy rozpozna Twoje słowa. Dopasowanie jest odporne na przejęzyczenia i pominięte zdania.</p>" +
         "<p><b>Pauza</b> zatrzymuje mikrofon i przewijanie. <b>Dotknij słowa</b>, żeby przeskoczyć w dowolne miejsce.</p>" +
-        "<p><b>Instalacja na iPhone:</b> Safari → Udostępnij → „Dodaj do ekranu początkowego”.</p>" +
-        "<p>Jeśli w trybie z ekranu głównego mikrofon nie startuje, otwórz stronę w karcie Safari — iOS blokuje Web Speech API w niektórych trybach PWA.</p>"
+        "<p><b>iPhone:</b> Safari → Udostępnij → „Dodaj do ekranu początkowego”.</p>" +
+        "<p><b>Ważne:</b> iOS nie udostępnia rozpoznawania mowy w trybie aplikacji z ekranu głównego. Ikona otwiera stronę w Safari, gdzie mikrofon działa. Jeśli mimo to mikrofon nie startuje, włącz Dyktowanie: Ustawienia → Ogólne → Klawiatura.</p>" +
+        "<p><b>Alternatywa natywna:</b> darmowa apka Open Prompter (MIT) z tym samym śledzeniem mowy: <a href='https://apps.apple.com/pl/app/open-prompter/id6763611915' target='_blank' rel='noopener'>App Store</a>.</p>"
     );
   });
 
@@ -809,6 +815,11 @@
   applyFont(state.font);
   applyMode(state.mode);
   render(text);
+
+  const standalone =
+    window.navigator.standalone === true ||
+    (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+  if (standalone) els.note.hidden = false;
 
   setStatus(SpeechRecognitionCtor ? "gotowy · dotknij Start" : "brak mowy w tej przeglądarce");
 
