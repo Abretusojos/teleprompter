@@ -306,6 +306,8 @@ body.focus #stage { padding-left: 14px; padding-right: 14px; }
   font-size: 12.5px;
   line-height: 1.35;
 }
+body.has-note #stage { padding-top: calc(env(safe-area-inset-top, 0px) + 168px); }
+
 #pwa-note button {
   flex: 0 0 auto; height: 28px; padding: 0 8px;
   border-radius: 8px; border: 0;

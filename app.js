@@ -40,6 +40,7 @@
     note: $("#pwa-note"),
     noteClose: $("#pwa-note-close"),
     noteCopy: $("#pwa-note-copy"),
+    noteText: $("#pwa-note-text"),
     modeManual: $("#btn-mode-manual"),
   };
 
@@ -746,6 +747,7 @@
   els.sheetOk.addEventListener("click", closeSheet);
   els.noteClose.addEventListener("click", () => {
     els.note.hidden = true;
+    document.body.classList.remove("has-note");
   });
   els.noteCopy.addEventListener("click", () => {
     const url = location.href;
@@ -859,7 +861,17 @@
   const standalone =
     window.navigator.standalone === true ||
     (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
-  if (standalone) els.note.hidden = false;
+  const inAppBrowser = /Telegram|FBAN|FBAV|FB_IAB|Instagram|Line\/|MicroMessenger|Twitter/i.test(
+    navigator.userAgent
+  );
+  if (standalone) {
+    els.note.hidden = false;
+  } else if (inAppBrowser || !SpeechRecognitionCtor) {
+    els.noteText.textContent =
+      "Przeglądarka w aplikacji nie ma mikrofonu. Skopiuj link i otwórz go w Safari.";
+    els.note.hidden = false;
+  }
+  document.body.classList.toggle("has-note", !els.note.hidden);
 
   setStatus(SpeechRecognitionCtor ? "gotowy · dotknij Start" : "brak mowy w tej przeglądarce");
 
