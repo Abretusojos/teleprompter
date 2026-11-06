@@ -93,6 +93,18 @@ body {
   color: var(--fg);
 }
 
+.block.marker {
+  margin: 22px 0 10px;
+  font-size: 15px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #7b8189;
+}
+.block.marker:first-child { margin-top: 8px; }
+.w.hint { opacity: 1; }
+
 .w.done { color: var(--dim); }
 .w.cur {
   color: #04170a;

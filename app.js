@@ -115,9 +115,7 @@
       parts.forEach((part) => {
         if (!part) return;
         if (part.startsWith("[") && part.endsWith("]")) {
-          part.split(/\s+/).filter(Boolean).forEach((w) => {
-            out.push({ t: w, n: "", hint: true });
-          });
+          out.push({ t: part, n: "", hint: true, marker: true });
           return;
         }
         part.split(/\s+/).filter(Boolean).forEach((w) => {
@@ -140,6 +138,23 @@
         frag.appendChild(block);
         block = document.createElement("div");
         block.className = "block";
+        return;
+      }
+      if (tok.marker) {
+        if (block.childNodes.length) {
+          frag.appendChild(block);
+          block = document.createElement("div");
+          block.className = "block";
+        }
+        const markBlock = document.createElement("div");
+        markBlock.className = "block marker";
+        const markSpan = document.createElement("span");
+        markSpan.className = "w hint";
+        markSpan.textContent = tok.t;
+        markSpan.dataset.i = String(state.words.length);
+        markBlock.appendChild(markSpan);
+        frag.appendChild(markBlock);
+        state.words.push({ el: markSpan, n: "" });
         return;
       }
       const span = document.createElement("span");
@@ -890,6 +905,22 @@
   applyFont(state.font);
   applyMode(state.mode);
   render(text);
+
+  // ?doc=name.txt loads a script shipped next to the app (same origin only)
+  const docParam = new URLSearchParams(location.search).get("doc");
+  if (docParam && /^[A-Za-z0-9._-]+\.txt$/.test(docParam)) {
+    fetch(docParam, { cache: "no-cache" })
+      .then((r) => (r.ok ? r.text() : Promise.reject(new Error("http " + r.status))))
+      .then((body) => {
+        if (!body.trim()) return;
+        localStorage.setItem("tp.text", body);
+        els.script.dataset.raw = body;
+        render(body);
+        setStatus("wczytano skrypt · " + matchedCount() + " słów");
+        history.replaceState(null, "", location.pathname);
+      })
+      .catch(() => toast("Nie udało się wczytać skryptu", 4000));
+  }
 
   const standalone =
     window.navigator.standalone === true ||
