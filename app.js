@@ -27,6 +27,8 @@
     edSave: $("#ed-save"),
     edCancel: $("#ed-cancel"),
     edCount: $("#ed-count"),
+    edFile: $("#ed-file"),
+    edFileInput: $("#ed-file-input"),
     toast: $("#toast"),
     sheet: $("#sheet"),
     sheetTitle: $("#sheet-title"),
@@ -744,6 +746,18 @@
   els.edSave.addEventListener("click", saveText);
   els.edCancel.addEventListener("click", closeEditor);
   els.edText.addEventListener("input", updateCount);
+  els.edFile.addEventListener("click", () => els.edFileInput.click());
+  els.edFileInput.addEventListener("change", () => {
+    const file = els.edFileInput.files && els.edFileInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      els.edText.value = String(reader.result || "");
+      updateCount();
+      toast("Wczytano: " + file.name);
+    };
+    reader.readAsText(file);
+  });
   els.sheetOk.addEventListener("click", closeSheet);
   els.noteClose.addEventListener("click", () => {
     els.note.hidden = true;
@@ -841,6 +855,25 @@
   /* ------------------------------------------------------------------ */
   /* boot                                                                */
   /* ------------------------------------------------------------------ */
+
+  function textFromHash() {
+    const m = location.hash.match(/^#t=([A-Za-z0-9\-_]+)$/);
+    if (!m) return null;
+    try {
+      const b64 = m[1].replace(/-/g, "+").replace(/_/g, "/");
+      const bin = atob(b64);
+      const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+      return new TextDecoder().decode(bytes);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  const sharedText = textFromHash();
+  if (sharedText) {
+    localStorage.setItem("tp.text", sharedText);
+    history.replaceState(null, "", location.pathname + location.search);
+  }
 
   const savedText = localStorage.getItem("tp.text");
   const text = savedText && savedText.trim() ? savedText : DEMO;

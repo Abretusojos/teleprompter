@@ -231,8 +231,12 @@ body.focus #stage { padding-left: 14px; padding-right: 14px; }
   font: 400 17px/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
   outline: none;
 }
+.editor-foot .chip { height: 34px; font-size: 13px; padding: 0 12px; }
+
 .editor-foot {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 12px;
   padding-top: 8px;
