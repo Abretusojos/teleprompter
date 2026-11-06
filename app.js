@@ -39,6 +39,7 @@
     modeVoice: $("#btn-mode-voice"),
     note: $("#pwa-note"),
     noteClose: $("#pwa-note-close"),
+    noteCopy: $("#pwa-note-copy"),
     modeManual: $("#btn-mode-manual"),
   };
 
@@ -80,6 +81,7 @@
     userHoldUntil: 0,
     retries: 0,
     lastError: "",
+    gotAnyResult: false,
   };
 
   /* ------------------------------------------------------------------ */
@@ -355,6 +357,7 @@
       state.interim = interim;
       const spoken = wordsOf(state.finalBuf + " " + interim);
       if (spoken.length) {
+        state.gotAnyResult = true;
         const found = locate(spoken);
         if (found >= 0 && found > state.idx) {
           setIndex(found);
@@ -425,6 +428,28 @@
     }
   }
 
+  let watchdogTimer = 0;
+
+  function startWatchdog() {
+    clearInterval(watchdogTimer);
+    const startedAt = Date.now();
+    state.gotAnyResult = false;
+    watchdogTimer = setInterval(() => {
+      if (!state.listening || state.gotAnyResult) {
+        clearInterval(watchdogTimer);
+        return;
+      }
+      if (Date.now() - startedAt > 10000) {
+        clearInterval(watchdogTimer);
+        setStatus("brak wyników z mikrofonu");
+        toast(
+          "Nie słyszę mowy. Sprawdź Dyktowanie i zgodę na mikrofon, albo dotknij „?”.",
+          6000
+        );
+      }
+    }, 1000);
+  }
+
   function startSpeech() {
     if (!SpeechRecognitionCtor) {
       showSpeechProblem("unsupported");
@@ -437,10 +462,12 @@
     // in parallel rather than awaiting it and losing the gesture.
     safeStart();
     primeMic();
+    startWatchdog();
     return true;
   }
 
   function stopSpeech(permanent) {
+    clearInterval(watchdogTimer);
     wantListen = false;
     state.listening = false;
     clearTimeout(restartTimer);
@@ -530,7 +557,9 @@
       state.retries = 0;
       wantListen = true;
       state.listening = true;
+      state.retries = 0;
       safeStart();
+      startWatchdog();
       setStatus("nasłuchuję…");
     } else {
       manualCarry = 0;
@@ -717,6 +746,17 @@
   els.sheetOk.addEventListener("click", closeSheet);
   els.noteClose.addEventListener("click", () => {
     els.note.hidden = true;
+  });
+  els.noteCopy.addEventListener("click", () => {
+    const url = location.href;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(
+        () => toast("Link skopiowany — wklej go w Safari"),
+        () => toast(url, 8000)
+      );
+    } else {
+      toast(url, 8000);
+    }
   });
 
   $("#btn-font-up").addEventListener("click", () => applyFont(state.font + 4));
