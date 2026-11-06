@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no" />
+<title>Teleprompter</title>
+<meta name="theme-color" content="#0a0a0b" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Prompter" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icons/icon-180.png" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="stylesheet" href="app.css" />
+</head>
+<body>
+
+<header id="topbar">
+  <button id="btn-edit" class="chip">Edytuj</button>
+  <div id="status" class="status">gotowy</div>
+  <button id="btn-focus" class="chip">Pełny</button>
+</header>
+
+<main id="stage">
+  <div id="script"></div>
+  <div id="tail"></div>
+</main>
+
+<div id="toast" role="status"></div>
+
+<div id="hud">
+  <div class="row">
+    <button id="btn-play" class="btn primary" aria-label="Start">▶ Start</button>
+    <button id="btn-pause" class="btn" hidden aria-label="Pauza">⏸ Pauza</button>
+    <button id="btn-stop" class="btn" hidden aria-label="Stop">⏹ Stop</button>
+    <button id="btn-more" class="btn icon" aria-label="Ustawienia">⚙︎</button>
+  </div>
+
+  <div id="settings" hidden>
+    <label class="set">
+      <span>Prędkość ręczna</span>
+      <input id="rng-speed" type="range" min="5" max="200" step="5" value="45" />
+      <b id="lbl-speed">45</b>
+    </label>
+    <div class="set">
+      <span>Rozmiar tekstu</span>
+      <div class="grp">
+        <button id="btn-font-down" class="btn small">A−</button>
+        <b id="lbl-font">44</b>
+        <button id="btn-font-up" class="btn small">A+</button>
+      </div>
+    </div>
+    <label class="set">
+      <span>Język mowy</span>
+      <select id="sel-lang">
+        <option value="en-US" selected>English (US)</option>
+        <option value="en-GB">English (UK)</option>
+        <option value="pl-PL">Polski</option>
+      </select>
+    </label>
+    <div class="set">
+      <span>Tryb</span>
+      <div class="grp">
+        <button id="btn-mode-voice" class="btn small on">Głos</button>
+        <button id="btn-mode-manual" class="btn small">Ręczny</button>
+      </div>
+    </div>
+    <div class="row wide">
+      <button id="btn-home" class="btn small">⤒ Od początku</button>
+      <button id="btn-jump" class="btn small">Przeskocz…</button>
+      <button id="btn-help" class="btn small">?</button>
+    </div>
+  </div>
+</div>
+
+<div id="editor" hidden>
+  <div class="editor-bar">
+    <button id="ed-cancel" class="chip">Anuluj</button>
+    <span class="editor-title">Wklej tekst prezentacji</span>
+    <button id="ed-save" class="chip accent">Zapisz</button>
+  </div>
+  <textarea id="ed-text" spellcheck="false" autocapitalize="sentences" placeholder="Wklej tutaj tekst, który będziesz czytać…"></textarea>
+  <div class="editor-foot">
+    <span id="ed-count">0 słów</span>
+    <span>Wskazówki w [nawiasach] są pomijane przez śledzenie mowy</span>
+  </div>
+</div>
+
+<div id="sheet" hidden>
+  <div class="sheet-card">
+    <h2 id="sheet-title">Przeskocz do miejsca</h2>
+    <p id="sheet-body"></p>
+    <div class="row wide">
+      <button id="sheet-ok" class="btn primary">OK</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
